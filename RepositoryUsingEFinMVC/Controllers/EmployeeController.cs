@@ -1,4 +1,5 @@
 ﻿using RepositoryUsingEFinMVC.DAL;
+using RepositoryUsingEFinMVC.GenericRepository;
 using RepositoryUsingEFinMVC.Repository;
 using System;
 using System.Collections.Generic;
@@ -10,22 +11,22 @@ namespace RepositoryUsingEFinMVC.Controllers
 {
     public class EmployeeController : Controller
     {
-        private IEmployeeRepository _employeeRepository;
+        private IGenericRepository<Employee> repository = null;
 
         public EmployeeController()
         {
-            _employeeRepository = new EmployeeRepository(new EmployeeDBContext());
+            this.repository = new GenericRepository<Employee>();
         }
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IGenericRepository<Employee> repository)
         {
-            _employeeRepository = employeeRepository;
+            this.repository = repository;
         }
 
         [HttpGet]
         // GET: Employee
         public ActionResult Index()
         {
-            var model = _employeeRepository.GetAll();
+            var model = repository.GetAll();
             return View(model);
         }
 
@@ -40,8 +41,8 @@ namespace RepositoryUsingEFinMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _employeeRepository.Insert(model);
-                _employeeRepository.Save();
+                repository.Insert(model);
+                repository.Save();
                 return RedirectToAction("Index", "Employee");
             }
             return View();
@@ -50,7 +51,7 @@ namespace RepositoryUsingEFinMVC.Controllers
         [HttpGet]
         public ActionResult EditEmployee(int EmployeeID)
         {
-            Employee model = _employeeRepository.GetByID(EmployeeID);
+            Employee model = repository.GetById(EmployeeID);
             return View(model);
         }
 
@@ -59,8 +60,8 @@ namespace RepositoryUsingEFinMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _employeeRepository.Update(model);
-                _employeeRepository.Save();
+                repository.Update(model);
+                repository.Save();
                 return RedirectToAction("Index", "Employee");
             }
             else
@@ -72,15 +73,15 @@ namespace RepositoryUsingEFinMVC.Controllers
         [HttpGet]
         public ActionResult DeleteEmployee(int EmployeeID)
         {
-            Employee model = _employeeRepository.GetByID(EmployeeID);
+            Employee model = repository.GetById(EmployeeID);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Delete(int EmployeeID)
         {
-            _employeeRepository.Delete(EmployeeID);
-            _employeeRepository.Save();
+            repository.Delete(EmployeeID);
+            repository.Save();
             return RedirectToAction("Index", "Employee");
         }
     }
